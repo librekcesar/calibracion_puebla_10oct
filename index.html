@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8" />
+<head>
+    <title>Nueva zonificación de Polígonos PB1</title>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css"/>
+    
+<!--Librerías para llamar la función cluster map-->
+<!--<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/MarkerCluster.Default.css" />
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.5.0/leaflet.markercluster.js"></script>
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+     hasta aca estan las librerias de cluster -->
+     <script type="text/javascript" src="pb1_zonas_actual_copia.js"></script>  
+	 <script type="text/javascript" src="pb1_zonas_antes_copia.js"></script>
+	 <!--Enclaces a las carpetas del buscador-->
+
+     <script src="leaflet-search-master\src\leaflet-search.js"></script>
+     <link rel="stylesheet" href="leaflet-search-master\src\leaflet-search.css" />
+	 
+<!--Objeto Div que incluye la apariencia del marco del mapa-->
+ <style>
+  #map { 
+	  width: 100%;
+	  height: 900px;
+	  box-shadow: 5px 5px 5px #888;
+  }
+
+
+ </style>
+ 
+ </head>
+  <body>
+   <div id="map"></div><!--Objeto div que inserta el mapa-->
+
+   
+
+
+ <script>
+ 
+ var map = L.map("map").setView([19.028389, -98.2202789], 11);
+	
+	//Esta linea añade un mapa base o las capas de openstreet map en este caso
+    L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>',
+        maxZoom: 18
+      }).addTo(map);
+
+////////////Función que agrega color y estilo a un poligono 
+      function stylePolygon(feature) {
+ return {
+   weight: 1.5, // grosor de línea
+   color: 'black', // color de línea
+   opacity: 1.0, // tansparencia de línea
+   fillColor: '#E55BD2', // color de relleno
+   fillOpacity: 0.6 // transparencia de relleno
+ };
+};
+
+/*
+var anterior = new L.geoJson(pb_antes, {
+ style: stylePolygon
+}).addTo(map);
+
+/////////////////////// 
+*/
+
+
+var anterior = L.geoJSON(pb_antes, {
+    style: stylePolygon,
+    onEachFeature: function (feature, layer) {
+        // Etiquetas fijas para la capa 1
+        layer.bindPopup('Zonificación: ' + feature.properties.zonificacion);
+    }
+});
+
+
+
+
+
+
+
+////////////Recuerda nombrar las funciones con otro estilo a la otra capa 
+    function stylePolygon2(feature) {
+ return {
+   weight: 1.5, // grosor de línea
+   color: 'black', // color de línea
+   opacity: 1.0, // tansparencia de línea
+   fillColor: '#13DC2B', // color de relleno
+   fillOpacity: 0.6 // transparencia de relleno
+ };
+};
+
+
+/*
+var calibra = new L.geoJson(pb_actu, {
+ style: stylePolygon2
+}).addTo(map);
+
+*/
+
+
+var calibra = L.geoJSON(pb_actu, {
+    style: stylePolygon2,
+    onEachFeature: function (feature, layer) {
+        // Etiquetas fijas para la capa 2
+        layer.bindPopup('Nueva Zonificación: ' + feature.properties.zonificacion);
+    }
+});
+
+
+
+
+	
+//var actual = L.geoJson(poli_22).addTo(map); La llamada normal de variables para cargar al mapa 
+//var anter = L.geoJson(poli_21).addTo(map); Se comenataron porque se llamaron con funciones para ponerles color 
+
+
+var overlayMaps = {
+    "Poligonos PB1 anteriores": anterior,
+    "Polígonos PB1 recalibrados": calibra
+};
+
+
+var layerControl = L.control.layers(overlayMaps).addTo(map);
+
+
+// Agrega las capas GeoJSON al mapa
+anterior.addTo(map);
+calibra.addTo(map);
+
+
+
+  
+//'<h1>'+feature.properties.id+'</h1><p>numero de puntos: '+feature.properties.NUMPOINTS+'</p>'
+ </script>
+ </body> 
+ </html>
